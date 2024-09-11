@@ -6,8 +6,3 @@ type User struct {
 	Email    string `gorm:"size:255;unique"` // ฟิลด์ Email เป็นสตริง ขนาดไม่เกิน 255 ตัวอักษร และต้องไม่ซ้ำกัน (unique)
 	Password string `gorm:"size:255"`        // ฟิลด์ Password เป็นสตริง ขนาดไม่เกิน 255 ตัวอักษร สำหรับเก็บรหัสผ่าน
 }
-
-type LoginUser struct {
-	Email    string `gorm:"size:255;unique"` // ฟิลด์ Email เป็นสตริง ขนาดไม่เกิน 255 ตัวอักษร และต้องไม่ซ้ำกัน (unique)
-	Password string `gorm:"size:255"`        // ฟิลด์ Password เป็นสตริง ขนาดไม่เกิน 255 ตัวอักษร สำหรับเก็บรหัสผ่าน
-}
