@@ -5,6 +5,7 @@ import (
 
 	"github.com/be2bag/myapp/internal/core/domain" // Import โครงสร้างข้อมูลของ User จาก domain
 	"github.com/be2bag/myapp/internal/core/ports"  // Import interface ของบริการ UserService
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gofiber/fiber/v2" // Import Fiber สำหรับสร้าง web framework ใน Go
 )
@@ -32,6 +33,13 @@ func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&user); err != nil { // อ่านข้อมูลจาก body ของ request แล้วแปลงเป็น user struct
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error()) // ถ้าอ่านข้อมูลไม่สำเร็จ ตอบกลับด้วยข้อผิดพลาด 400 (Bad Request)
 	}
+
+	// เข้ารหัสรหัสผ่านด้วย bcrypt
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to hash password")
+	}
+	user.Password = string(hashedPassword) // ตั้งค่ารหัสผ่านที่เข้ารหัสแล้วให้กับ user
 
 	createdUser, err := h.userService.RegisterUser(user) // เรียกใช้บริการเพื่อสร้างผู้ใช้ใหม่
 	if err != nil {                                      // ถ้ามีข้อผิดพลาดขณะสร้างผู้ใช้
