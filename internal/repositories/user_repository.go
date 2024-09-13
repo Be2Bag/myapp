@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"fmt"
+
 	"github.com/be2bag/myapp/internal/core/domain" // นำเข้าโมเดล User จาก domain
 	"github.com/be2bag/myapp/internal/core/ports"  // นำเข้า interfaces ของ repository จาก ports
 
@@ -39,7 +41,8 @@ func (r *userRepository) UpdateUser(user domain.User) (domain.User, error) {
 func (r *userRepository) GetUserByID(id uint) (domain.User, error) {
 	var user domain.User
 	result := r.db.First(&user, id) // ใช้ GORM ดึงข้อมูลผู้ใช้ตาม ID
-	return user, result.Error       // คืนค่าผู้ใช้ และ error ถ้ามี
+	fmt.Println(result)
+	return user, result.Error // คืนค่าผู้ใช้ และ error ถ้ามี
 }
 
 // GetAllUsers เป็นฟังก์ชันสำหรับดึงข้อมูลผู้ใช้ทั้งหมด

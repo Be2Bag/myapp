@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/be2bag/myapp/internal/core/domain" // นำเข้าโมเดล User จาก domain
 	"github.com/be2bag/myapp/internal/core/ports"  // นำเข้า interfaces ของ service และ repository จาก ports
 )
@@ -32,10 +34,12 @@ func (s *userService) ModifyUser(user domain.User) (domain.User, error) {
 
 // FindUserByID เรียกใช้ฟังก์ชัน GetUserByID ของ repository เพื่อนำข้อมูลผู้ใช้จากฐานข้อมูลตาม ID
 func (s *userService) FindUserByID(id uint) (domain.User, error) {
+	fmt.Println("FindUserByID")
 	return s.userRepo.GetUserByID(id)
 }
 
 // ListUsers เรียกใช้ฟังก์ชัน GetAllUsers ของ repository เพื่อดึงข้อมูลผู้ใช้ทั้งหมด
 func (s *userService) ListUsers() ([]domain.User, error) {
+	fmt.Println("ListUsers")
 	return s.userRepo.GetAllUsers()
 }

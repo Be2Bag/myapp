@@ -32,6 +32,15 @@ func main() {
 		panic("failed to migrate database: " + err.Error())
 	}
 
+	//======================= Login ============================
+	loginRepo := repositories.NewLoginRepository(db)
+
+	loginService := services.NewLoginService(loginRepo)
+
+	handlers.NewLoginHandler(app, loginService)
+
+	// app.Use(handlers.AuthMiddleware)
+
 	// สร้าง Repository (คลาสที่จัดการกับฐานข้อมูล) สำหรับ User
 	userRepo := repositories.NewUserRepository(db)
 

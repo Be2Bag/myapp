@@ -20,11 +20,11 @@ func NewUserHandler(app *fiber.App, userService ports.UserService) {
 	handler := &userHandler{userService: userService} // สร้าง userHandler ใหม่พร้อมกับเชื่อมโยงกับ userService
 
 	// ลงทะเบียนเส้นทางต่างๆ ของ HTTP requests และชี้ไปที่ method ของ handler ที่จะทำงาน
-	app.Post("/users", handler.RegisterUser)     // ลงทะเบียนผู้ใช้ใหม่
-	app.Delete("/users/:id", handler.RemoveUser) // ลบผู้ใช้โดยระบุ ID
-	app.Put("/users/:id", handler.ModifyUser)    // แก้ไขข้อมูลผู้ใช้โดยระบุ ID
-	app.Get("/users/:id", handler.FindUserByID)  // ค้นหาผู้ใช้โดยระบุ ID
-	app.Get("/users", handler.ListUsers)         // ดึงรายชื่อผู้ใช้ทั้งหมด
+	app.Post("/users", handler.RegisterUser)  // ลงทะเบียนผู้ใช้ใหม่
+	app.Delete("/delete", handler.RemoveUser) // ลบผู้ใช้โดยระบุ ID
+	app.Put("/update", handler.ModifyUser)    // แก้ไขข้อมูลผู้ใช้โดยระบุ ID
+	app.Get("/usersid", handler.FindUserByID) // ค้นหาผู้ใช้โดยระบุ ID
+	app.Get("/users", handler.ListUsers)      // ดึงรายชื่อผู้ใช้ทั้งหมด
 }
 
 // ฟังก์ชันสำหรับจัดการ HTTP POST request เพื่อสมัครสมาชิกใหม่
@@ -51,9 +51,9 @@ func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
 
 // ฟังก์ชันสำหรับจัดการ HTTP DELETE request เพื่อทำการลบผู้ใช้ตาม ID
 func (h *userHandler) RemoveUser(c *fiber.Ctx) error {
-	id, _ := strconv.ParseUint(c.Params("id"), 10, 32) // อ่านค่า ID จาก URL และแปลงเป็นจำนวนเต็ม (uint)
-	err := h.userService.RemoveUser(uint(id))          // เรียกใช้บริการเพื่อทำการลบผู้ใช้ตาม ID
-	if err != nil {                                    // ถ้าลบไม่สำเร็จ
+	id, _ := strconv.ParseUint(c.Query("id"), 10, 32) // อ่านค่า ID จาก URL และแปลงเป็นจำนวนเต็ม (uint)
+	err := h.userService.RemoveUser(uint(id))         // เรียกใช้บริการเพื่อทำการลบผู้ใช้ตาม ID
+	if err != nil {                                   // ถ้าลบไม่สำเร็จ
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error()) // ตอบกลับด้วยข้อผิดพลาด 500 (Internal Server Error)
 	}
 
@@ -67,8 +67,8 @@ func (h *userHandler) ModifyUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error()) // ถ้าอ่านข้อมูลไม่สำเร็จ ตอบกลับด้วยข้อผิดพลาด 400 (Bad Request)
 	}
 
-	id, _ := strconv.ParseUint(c.Params("id"), 10, 32) // อ่านค่า ID จาก URL และแปลงเป็นจำนวนเต็ม (uint)
-	user.ID = uint(id)                                 // กำหนดค่า ID ของผู้ใช้ที่ต้องการแก้ไข
+	id, _ := strconv.ParseUint(c.Query("id"), 10, 32) // อ่านค่า ID จาก URL และแปลงเป็นจำนวนเต็ม (uint)
+	user.ID = uint(id)                                // กำหนดค่า ID ของผู้ใช้ที่ต้องการแก้ไข
 
 	updatedUser, err := h.userService.ModifyUser(user) // เรียกใช้บริการเพื่อทำการแก้ไขข้อมูลผู้ใช้
 	if err != nil {                                    // ถ้าแก้ไขไม่สำเร็จ
@@ -80,9 +80,9 @@ func (h *userHandler) ModifyUser(c *fiber.Ctx) error {
 
 // ฟังก์ชันสำหรับจัดการ HTTP GET request เพื่อค้นหาข้อมูลผู้ใช้ตาม ID
 func (h *userHandler) FindUserByID(c *fiber.Ctx) error {
-	id, _ := strconv.ParseUint(c.Params("id"), 10, 32) // อ่านค่า ID จาก URL และแปลงเป็นจำนวนเต็ม (uint)
-	user, err := h.userService.FindUserByID(uint(id))  // เรียกใช้บริการเพื่อค้นหาผู้ใช้ตาม ID
-	if err != nil {                                    // ถ้าค้นหาไม่สำเร็จ (ไม่พบผู้ใช้)
+	id, _ := strconv.ParseUint(c.Query("id"), 10, 32) // อ่านค่า ID จาก URL และแปลงเป็นจำนวนเต็ม (uint)
+	user, err := h.userService.FindUserByID(uint(id)) // เรียกใช้บริการเพื่อค้นหาผู้ใช้ตาม ID
+	if err != nil {                                   // ถ้าค้นหาไม่สำเร็จ (ไม่พบผู้ใช้)
 		return c.Status(fiber.StatusNotFound).SendString(err.Error()) // ตอบกลับด้วยข้อผิดพลาด 404 (Not Found)
 	}
 
